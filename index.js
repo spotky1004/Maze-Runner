@@ -42,6 +42,7 @@ function loop() {
     const unitLeng = canvas.height/mazeMap.yHeight;
     c.lineWidth = unitLeng/4;
     c.lineCap = "round";
+    c.shadowBlur = 10;
     for (let x = Math.floor(mazeMap.x), xl = x+mazeMap.yHeight*4; x < xl; x++) {
         if (typeof mazeMap.map[Math.floor(x)] === "undefined") generateMaze(Math.floor(x));
         const mapUnit = mazeMap.map[Math.floor(x)];
@@ -50,16 +51,25 @@ function loop() {
             const d = Number(mapUnit[y]);
             c.beginPath();
             c.strokeStyle = `hsl(${(x+y)*Math.sqrt(10)%360}, 80%, 50%)`;
+            c.shadowColor = c.strokeStyle;
             c.moveTo(unitLeng*(x-mazeMap.x+1), unitLeng*(y+1));
             c.lineTo(unitLeng*(x-mazeMap.x+1-d), unitLeng*(y+1-!d));
             c.stroke();
+        }
+
+        if (x%5 === 0) {
+            const textToDraw = x.toString();
+            c.font = `${100/mazeMap.yHeight}vh Arial`;
+            c.fillStyle = `hsla(${(x*Math.sqrt(10)+180)%360}, 80%, 50%, 0.5)`;
+            c.shadowColor = c.fillStyle;
+            c.fillText(textToDraw, unitLeng*(x-mazeMap.x+0.5)-c.measureText(textToDraw).width/2, canvas.height-50); 
         }
     }
 }
 
 startLoop = (t) => mainLoop = mainLoop ?? setInterval(loop, t);
 
-startGame({yHeight: 20, acceleration: 0.1, tick: 30});
+startGame({yHeight: 30, acceleration: 0.1, tick: 30});
 
 // keypress
 

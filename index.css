@@ -4,12 +4,19 @@
     user-select: none;
 }
 
+body {
+    background-color: #222;
+    box-shadow: 0 0 4vh #fff inset;
+    width: 100vw; height: 100vh;
+}
+
 #gameWarp {
     position: relative; top: 20vh;
     height: 60vh;
     z-index: 0;
-    background-color: #444;
+    background-color: #333;
 }
 #canvas {
     margin: 0 auto;
+    box-shadow: 0 0 4vh #fff;
 }
