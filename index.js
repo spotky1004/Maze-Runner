@@ -5,9 +5,19 @@ let c = canvas.getContext("2d");
 
 // define vars
 let mainLoop, player, mazeMap, tickSpeed, blured=false;
+const _playerDirections = {
+    ArrowUp   : {x:  0, y: -1},
+    ArrowDown : {x:  0, y:  1},
+    ArrowLeft : {x: -1, y:  0},
+    ArrowRight: {x:  1, y:  0}
+}
 
 function generateMaze(x=0) {
-    mazeMap.map[x] = (BigInt(Math.floor(Math.random()*1e15))*2n**BigInt(mazeMap.yHeight)/BigInt(1e15)).toString(2).padStart(mazeMap.yHeight, "0");
+    const r = BigInt(Math.floor(Math.random()*Number.MAX_SAFE_INTEGER));
+    const m = 2n**BigInt(mazeMap.yHeight);
+    const n = r*m/BigInt(Number.MAX_SAFE_INTEGER);
+    const s = n.toString(2).padStart(mazeMap.yHeight, "0");
+    mazeMap.map[x] = s;
 }
 
 // game functions
@@ -71,14 +81,33 @@ function loop() {
     }
 
     // player
-    const playerSize = 0.8;
-    const playerSpeed = Math.max(0.1, mazeMap.yHeight*mazeMap.speed/100);
-    
-}
+    const playerSize = 0.4;
+    const playerDrawSize = playerSize*unitLeng;
+    const playerDrawOffset = unitLeng*(1-playerSize)/2;
 
+    /* player move */
+    const playerSpeed = Math.max(0.1, mazeMap.yHeight*mazeMap.speed/300);
+    const c1 = keyPressed.ArrowUp || keyPressed.ArrowDown && (keyPressed.ArrowUp && keyPressed.ArrowDown);
+    const c2 = keyPressed.ArrowLeft || keyPressed.ArrowRight && (keyPressed.ArrowLeft && keyPressed.ArrowRight);
+    const c3 = c1 && c2;
+    if (c3) playerSpeed/Math.SQRT2;
+
+    for (const key in _playerDirections) if (keyPressed[key]) for (const axis in player) player[axis] += _playerDirections[key][axis]*playerSpeed;
+
+    if (player.y > mazeMap.yHeight+0.2-playerSize) player.y = playerSize/2-0.5;
+    if (player.y < playerSize-1) player.y = playerSize-1;
+
+    /* draw player */
+    c.fillStyle = "#f00";
+    c.shadowColor = c.fillStyle;
+
+    c.beginPath();
+    c.fillRect(playerDrawOffset+(player.x-mazeMap.x)*unitLeng, playerDrawOffset+player.y*unitLeng, playerDrawSize, playerDrawSize);
+    c.stroke();
+}
 startLoop = (t) => mainLoop = mainLoop ?? setInterval(loop, t);
 
-startGame({yHeight: 15, acceleration: 0.1, tick: 30});
+startGame({yHeight: 15, acceleration: 0.1, tick: 20});
 
 // keypress
 let keyPressed = {};
