@@ -1,0 +1,15 @@
+* {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+#gameWarp {
+    position: relative; top: 20vh;
+    height: 60vh;
+    z-index: 0;
+    background-color: #444;
+}
+#canvas {
+    margin: 0 auto;
+}
